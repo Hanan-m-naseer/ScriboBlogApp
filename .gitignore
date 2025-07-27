@@ -1,0 +1,19 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+
+# Django stuff
+*.sqlite3
+*.log
+*.db
+.env
+/static/
+media/
+
+# Migrations
+**/migrations/*.pyc
+**/migrations/__pycache__/
+
+# Editor folders
+.vscode/
+.idea/

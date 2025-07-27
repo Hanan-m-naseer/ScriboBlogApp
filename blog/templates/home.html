@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Welcome | Scribo{% endblock %}
+
+{% block content %}
+<section class="hero-section d-flex justify-content-center align-items-center">
+  <div class="hero-card glass-card text-center p-5">
+    <h1 class="display-5 fw-bold mb-3 text-black">Beautiful stories, beautifully told</h1>
+    <p class="lead text-black">Discover amazing stories, insights, and ideas from creative minds around the world.</p>
+
+    {% if user.is_authenticated %}
+      <a href="{% url 'create_post' %}" class="btn btn-dark mt-4 px-4">Create New Post</a>
+    {% else %}
+      <!-- <a href="{% url 'register' %}" class="btn btn-outline-dark mt-4 me-2 px-4">Get Started</a> -->
+      <a href="{% url 'register' %}" class="btn btn-dark mt-4 px-4">Get Started</a>
+    {% endif %}
+  </div>
+</section>
+<section class="about-scribo text-center py-5">
+  <h2 class="display-6 fw-bold">Why Scribo?</h2>
+  <p class="lead mx-auto" style="max-width: 700px;">
+    Scribo is a clean and elegant blogging platform where writers express stories beautifully, and readers discover them effortlessly. No distractions, just pure storytelling.
+  </p>
+</section>
+
+{% endblock %}

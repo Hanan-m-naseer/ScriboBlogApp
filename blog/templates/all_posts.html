@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}All Posts | Scribo{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="container py-4">
+    <!-- Search Bar -->
+    <form method="get" action="{% url 'all_posts' %}" class="mb-4">
+      <div class="input-group mx-auto" style="max-width: 500px;">
+        <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Search posts...">
+        <button class="btn btn-dark" type="submit">Search</button>
+      </div>
+    </form>
+
+    <!-- Posts -->
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for post in page_obj %}
+      <div class="col">
+        <div class="glass-card p-3 h-100 d-flex flex-column justify-content-between position-relative text-black">
+
+          <!-- Author + Date -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <small class="text-muted">By {{ post.author.username }}</small>
+            <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
+          </div>
+
+          <!-- Post Image -->
+          {% if post.image %}
+          <div class="text-center mb-3">
+            <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid rounded"
+              style="width: 100%; max-height: 200px; object-fit: cover;">
+          </div>
+          {% endif %}
+
+          <!-- Title -->
+          <h5 class="text-center mb-2 text-black">{{ post.title }}</h5>
+
+          <!-- Like and Read More -->
+          <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+            <form class="like-form" method="post" action="{% url 'like_post_ajax' post.id %}" data-post-id="{{ post.id }}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-like like-btn border-0 bg-transparent p-0">
+                {% if user in post.likes.all %}❤️{% else %}🤍{% endif %}
+              </button>
+              <span id="like-count-{{ post.id }}">{{ post.likes.count }}</span>
+            </form>
+            <a href="{% url 'post_detail' post.pk %}" class="btn btn-dark mt-4 px-4">Read More</a>
+          </div>
+
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center text-muted">No posts available.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+      <nav>
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}">&laquo;</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+          <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% else %}
+          <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- AJAX for Like Toggle -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const likeForms = document.querySelectorAll(".like-form");
+
+    likeForms.forEach(form => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const postId = form.dataset.postId;
+        const csrfToken = form.querySelector("[name=csrfmiddlewaretoken]").value;
+
+        const response = await fetch(`/like-post-ajax/${postId}/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const icon = form.querySelector(".like-btn");
+          const countSpan = document.getElementById(`like-count-${postId}`);
+          icon.textContent = data.liked ? "❤️" : "🤍";
+          countSpan.textContent = data.total_likes;
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

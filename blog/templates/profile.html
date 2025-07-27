@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Your Profile | Scribo{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="glass-card p-4 text-center">
+    <!-- Profile Picture -->
+    {% if user.profile.profile_picture %}
+      <img src="{{ user.profile.profile_picture.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile Picture">
+    {% else %}
+      <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="120" height="120" alt="Default Avatar">
+    {% endif %}
+
+    <!-- Username -->
+    <h3 class="fw-bold">{{ user.username }}</h3>
+
+    <!-- Bio -->
+    {% if user.profile.bio %}
+      <p class="text-muted">{{ user.profile.bio }}</p>
+    {% else %}
+      <p class="text-muted fst-italic">No bio added yet.</p>
+    {% endif %}
+
+    <!-- Buttons -->
+    <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{% url 'create_post' %}" class="btn btn-dark">Create Post</a>
+      <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary">Edit Profile</a>
+      <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+  </div>
+
+  <!-- User's Posts -->
+  <div class="mt-5">
+    <h4 class="mb-4 text-center">Your Posts</h4>
+    {% if user.posts.all %}
+      <div class="row g-4">
+        {% for post in user.posts.all %}
+          <div class="col-md-4">
+            <div class="glass-card p-3 h-100">
+              <h5 class="fw-bold text-center mb-2 text-black">{{ post.title }}</h5>
+              {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post Image" class="img-fluid rounded my-2">
+              {% endif %}
+              <p class="text-muted small">Created: {{ post.created_at|date:"M d, Y" }}</p>
+              <a href="{% url 'post_detail' post.id %}" class="btn btn-dark mt-4 px-4">Read More</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted text-center mt-3">You haven't created any posts yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
