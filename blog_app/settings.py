@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog',  # Custom app for the blog functionality
-    'rest_framework',  # Django REST Framework for API support
+    'blog',  
+    'rest_framework',  
     'widget_tweaks',
 ]
 
@@ -130,7 +130,11 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  
+    ],
 }
 
 STATIC_URL = '/static/'
