@@ -92,6 +92,10 @@ POST http://127.0.0.1:8000/api/posts/1/comments/
 
 
 ---
+API Screenshots provided in Screenshots Folder
+
+---
+
 
 ## ⚙️ Setup Instructions
 
